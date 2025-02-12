@@ -1,7 +1,7 @@
 const btnSortear = document.querySelector("#btnSortear");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
-const imgDescargar = document.querySelector("#btnDescargar"); // Imagen existente
+const imgDescargar = document.querySelector("#btnDescargar");
 
 // Cargar lista de amigos al iniciar
 async function cargarAmigos() {
@@ -14,60 +14,47 @@ async function cargarAmigos() {
             li.textContent = amigo;
             listaAmigos.appendChild(li);
         });
-
-        // Ocultar la opción de descarga si todavía hay amigos en la lista
-        imgDescargar.style.opacity = amigos.length === 0 ? "1" : "0.5";
-        imgDescargar.style.pointerEvents = amigos.length === 0 ? "auto" : "none";
-        
     } catch (error) {
         console.error("Error al cargar la lista de amigos:", error);
     }
 }
 
-// Sortear un amigo
+// Sortear un amigo (una sola vez por sesión)
 btnSortear.addEventListener("click", async () => {
+    if (sessionStorage.getItem("sorteoRealizado")) {
+        alert("Ya realizaste un sorteo en esta sesión.");
+        return;
+    }
+
     try {
         let res = await fetch("https://amigomuni.onrender.com/sortear", { method: "POST" });
         let data = await res.json();
 
-        // Limpiar resultado previo y mostrar solo el nuevo
         resultado.innerHTML = "";
-
         let p = document.createElement("p");
         p.textContent = data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`;
         resultado.appendChild(p);
 
-        await cargarAmigos(); // Actualizar la lista después de cada sorteo
+        cargarAmigos(); // Volver a cargar la lista de amigos actualizada
 
-<<<<<<< HEAD
-        // Deshabilitar el botón si ya no hay amigos
-        if (listaAmigos.children.length === 0) {
-            btnSortear.disabled = true;
-            btnSortear.style.opacity = "0.5";
-        }
-=======
         // Mostrar la imagen de descarga después del sorteo
-        imgDescargar.style.display = "inline-block"; // Se muestra la imagen como botón
->>>>>>> parent of 42a5d4f (presionar una sola vez el botón)
+        imgDescargar.style.display = "inline-block";
+
+        // Deshabilitar el botón después de un sorteo
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+        sessionStorage.setItem("sorteoRealizado", "true"); // Guardar en sessionStorage
     } catch (error) {
         console.error("Error al sortear:", error);
     }
 });
 
-// Descargar los resultados cuando ya no hay amigos en la lista
+// Descargar los resultados
 imgDescargar.addEventListener("click", async () => {
     try {
-        let res = await fetch("https://amigomuni.onrender.com/puedeDescargar");
-        let { puedeDescargar } = await res.json();
-
-        if (!puedeDescargar) {
-            alert("Aún quedan amigos en la lista. Termina el sorteo antes de descargar.");
-            return;
-        }
-
-        const archivo = await fetch("https://amigomuni.onrender.com/descargar");
-        if (archivo.ok) {
-            const blob = await archivo.blob();
+        const res = await fetch("https://amigomuni.onrender.com/descargar");
+        if (res.ok) {
+            const blob = await res.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
@@ -81,9 +68,11 @@ imgDescargar.addEventListener("click", async () => {
     }
 });
 
-<<<<<<< HEAD
-// Verificar si hay amigos al cargar la página
-=======
-// Cargar la lista de amigos al inicio
->>>>>>> parent of 42a5d4f (presionar una sola vez el botón)
-document.addEventListener("DOMContentLoaded", cargarAmigos);
+// Verificar si el sorteo ya se hizo en la sesión
+document.addEventListener("DOMContentLoaded", () => {
+    cargarAmigos();
+    if (sessionStorage.getItem("sorteoRealizado")) {
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+    }
+});
