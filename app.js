@@ -3,12 +3,14 @@ const btnSortear = document.querySelector("#btnSortear");
 const inputAmigo = document.querySelector("#amigo");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
-const btnDescargar = document.createElement("button");
+const btnDescargar = document.createElement("img"); // Cambiar a imagen
 
-// Crear el botón de descarga, pero que inicialmente estará oculto
+// Crear la imagen de descarga
 btnDescargar.id = "btnDescargar";
-btnDescargar.textContent = "Descargar resultados";
+btnDescargar.src = "assets/corazon_con_manos.png"; // Ruta de la imagen
+btnDescargar.alt = "Descargar resultados";
 btnDescargar.style.display = "none";  // Ocultarlo inicialmente
+btnDescargar.style.cursor = "pointer"; // Cambiar el cursor para indicar que es clickeable
 document.body.appendChild(btnDescargar);
 
 // Cargar lista de amigos al iniciar
