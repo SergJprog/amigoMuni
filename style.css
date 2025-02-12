@@ -3,7 +3,7 @@
     --color-secondary: #FFF9EB;
     --color-tertiary: #FEF2F4;
     --color-button: #D14D72;
-    --color-button-hover: FFABAB;
+    --color-button-hover: #FFABAB;
     --color-text: #444444;
     --color-white: #FFFFFF;
 }
@@ -29,11 +29,13 @@ body {
     flex-direction: column;
     height: 100%;
     width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    margin: 0 auto;
 }
 
 /* Banner */
 .header-banner {
-    flex: 30%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,7 +56,6 @@ body {
 
 /* Sección de entrada */
 .input-section {
-    flex: 70%;
     background-color: var(--color-secondary);
     border: 1px solid #000;
     border-radius: 64px 64px 0 0;
@@ -63,7 +64,8 @@ body {
     align-items: center;
     padding: 20px;
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 /* Títulos */
@@ -83,10 +85,12 @@ body {
     width: 100%;
     max-width: 600px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 .input-name {
     width: 100%;
+    max-width: 350px;
     padding: 10px;
     border: 2px solid #000;
     border-radius: 25px 0 0 25px;
@@ -149,6 +153,8 @@ ul {
     color: var(--color-white);
     background-color: var(--color-button);
     font-size: 16px;
+    border-radius: 25px;
+    margin-top: 20px;
 }
 
 .button-draw img {
