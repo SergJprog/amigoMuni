@@ -3,15 +3,7 @@ const btnSortear = document.querySelector("#btnSortear");
 const inputAmigo = document.querySelector("#amigo");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
-const btnDescargar = document.createElement("img"); // Cambiar a imagen
-
-// Crear la imagen de descarga
-btnDescargar.id = "btnDescargar";
-btnDescargar.src = "assets/corazon_con_manos.png"; // Ruta de la imagen
-btnDescargar.alt = "Descargar resultados";
-btnDescargar.style.display = "none";  // Ocultarlo inicialmente
-btnDescargar.style.cursor = "pointer"; // Cambiar el cursor para indicar que es clickeable
-document.body.appendChild(btnDescargar);
+const imgDescargar = document.querySelector("#btnDescargar"); // Imagen existente
 
 // Cargar lista de amigos al iniciar
 async function cargarAmigos() {
@@ -72,12 +64,12 @@ btnSortear.addEventListener("click", async () => {
 
     cargarAmigos(); // Actualiza la lista de amigos
 
-    // Mostrar el botón de descarga cuando se haya realizado el sorteo
-    btnDescargar.style.display = "inline-block";
+    // Mostrar la imagen de descarga después del sorteo
+    imgDescargar.style.display = "inline-block"; // Se muestra la imagen como botón
 });
 
 // Descargar los resultados
-btnDescargar.addEventListener("click", async () => {
+imgDescargar.addEventListener("click", async () => {
     const res = await fetch("https://amigomuni.onrender.com/descargar");
     if (res.ok) {
         const blob = await res.blob();
