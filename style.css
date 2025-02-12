@@ -55,7 +55,7 @@ body {
 }
 
 .header-banner img {
-    max-width: 400px;
+    max-width: 500px;
     height: auto;
 }
 
@@ -151,7 +151,7 @@ ul {
     }
 
     .header-banner img {
-        max-width: 300px;
+        max-width: 350px;
     }
 
     .button-draw {
@@ -173,7 +173,7 @@ ul {
     }
 
     .header-banner img {
-        max-width: 200px;
+        max-width: 300px;
     }
 
     .button-draw {
