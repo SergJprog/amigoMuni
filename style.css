@@ -70,7 +70,7 @@ body {
     padding: 20px;
     width: 100%;
     justify-content: center;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
 }
 
 /* Títulos */
@@ -79,7 +79,7 @@ body {
     font-weight: 700;
     color: var(--color-primary);
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 /* Listas */
