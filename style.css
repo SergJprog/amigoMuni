@@ -21,6 +21,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: "Inter", sans-serif;
 }
 
 .main-content {
@@ -38,6 +39,7 @@ body {
     align-items: center;
     padding: 40px 0;
     text-align: center;
+    width: 100%;
 }
 
 .main-title {
@@ -47,6 +49,7 @@ body {
     font-style: italic;
     color: var(--color-white);
     margin: 0;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 /* Sección de entrada */
@@ -60,11 +63,12 @@ body {
     align-items: center;
     padding: 20px;
     width: 100%;
+    justify-content: space-between;
 }
 
 /* Títulos */
 .section-title {
-    font-family: "Inter", serif;
+    font-family: "Inter", sans-serif;
     font-size: 36px;
     font-weight: 700;
     color: var(--color-primary);
@@ -90,31 +94,23 @@ body {
 }
 
 .button-container {
-    width: 300px;
+    width: 100%;
+    display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
-/* Estilos de entrada de texto */
-.input-title {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #333;
-    border-right: none;
-    border-radius: 25px 0 0 25px;
-    font-family: "Merriweather", serif;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Estilos de botón */
-button {
-    padding: 15px 30px;
+.button-container button {
+    width: 80%;
+    max-width: 300px;
+    padding: 15px;
     font-family: "Inter", sans-serif;
     font-size: 16px;
     border: 2px solid #000;
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    text-align: center;
 }
 
 .button-add {
@@ -144,19 +140,19 @@ ul {
     text-align: center;
 }
 
-/* Botón de sortear título */
+/* Botón de sortear */
 .button-draw {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 10px 40px;
+    padding: 12px 40px;
     color: var(--color-white);
     background-color: var(--color-button);
     font-size: 16px;
 }
 
 .button-draw img {
-    margin-right: 40px;
+    margin-right: 10px;
 }
 
 .button-draw:hover {
@@ -167,7 +163,6 @@ ul {
 @media screen and (max-width: 1024px) {
     .header-banner {
         flex: 40%;
-        padding: 20px 0;
     }
 
     .main-title {
@@ -184,12 +179,8 @@ ul {
     }
 
     .button-container {
-        width: 90%;
-    }
-
-    .button-draw {
-        padding: 12px 25px;
-        font-size: 14px;
+        flex-direction: column;
+        margin-top: 10px;
     }
 
     .result-list {
@@ -213,22 +204,17 @@ ul {
 
     .input-wrapper {
         flex-direction: column;
-        margin-top: 15px;
-    }
-
-    .input-name {
-        margin-bottom: 10px;
-        padding: 10px;
-        font-size: 14px;
+        margin-top: 10px;
     }
 
     .button-container {
-        width: 85%;
+        flex-direction: column;
+        width: 100%;
     }
 
-    .button-draw {
-        padding: 12px 20px;
-        font-size: 14px;
+    .button-container button {
+        width: 80%;
+        margin-bottom: 10px;
     }
 
     .result-list {
@@ -261,13 +247,9 @@ ul {
         font-size: 14px;
     }
 
-    .button-container {
+    .button-container button {
         width: 90%;
-    }
-
-    .button-draw {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 12px;
     }
 
     .result-list {
