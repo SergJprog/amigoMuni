@@ -6,7 +6,7 @@ const resultado = document.querySelector("#resultado");
 
 // Cargar lista de amigos al iniciar
 async function cargarAmigos() {
-    let res = await fetch("http://localhost:3000/amigos");
+    let res = await fetch("https://amigomuni.onrender.com/amigos");
     let amigos = await res.json();
     listaAmigos.innerHTML = "";
     amigos.forEach(amigo => {
@@ -18,7 +18,7 @@ async function cargarAmigos() {
 
 // Cargar resultados anteriores al iniciar
 async function cargarResultados() {
-    let res = await fetch("http://localhost:3000/resultados");
+    let res = await fetch("https://amigomuni.onrender.com/resultados");
     let sorteos = await res.json();
     resultado.innerHTML = "";
     sorteos.forEach(nombre => {
@@ -36,7 +36,7 @@ btnAgregar.addEventListener("click", async () => {
         return;
     }
 
-    let res = await fetch("http://localhost:3000/agregar", {
+    let res = await fetch("https://amigomuni.onrender.com/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre })
@@ -50,7 +50,7 @@ btnAgregar.addEventListener("click", async () => {
 
 // Sortear un amigo
 btnSortear.addEventListener("click", async () => {
-    let res = await fetch("http://localhost:3000/sortear", { method: "POST" });
+    let res = await fetch("https://amigomuni.onrender.com/sortear", { method: "POST" });
     let data = await res.json();
 
     let li = document.createElement("li");
