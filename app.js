@@ -3,6 +3,13 @@ const btnSortear = document.querySelector("#btnSortear");
 const inputAmigo = document.querySelector("#amigo");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
+const btnDescargar = document.createElement("button");
+
+// Crear el botón de descarga, pero que inicialmente estará oculto
+btnDescargar.id = "btnDescargar";
+btnDescargar.textContent = "Descargar resultados";
+btnDescargar.style.display = "none";  // Ocultarlo inicialmente
+document.body.appendChild(btnDescargar);
 
 // Cargar lista de amigos al iniciar
 async function cargarAmigos() {
@@ -62,6 +69,24 @@ btnSortear.addEventListener("click", async () => {
     resultado.appendChild(li);
 
     cargarAmigos(); // Actualiza la lista de amigos
+
+    // Mostrar el botón de descarga cuando se haya realizado el sorteo
+    btnDescargar.style.display = "inline-block";
+});
+
+// Descargar los resultados
+btnDescargar.addEventListener("click", async () => {
+    const res = await fetch("https://amigomuni.onrender.com/descargar");
+    if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resultado.txt";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
 });
 
 // Cargar datos al inicio

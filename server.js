@@ -70,5 +70,14 @@ app.post("/sortear", (req, res) => {
     });
 });
 
+// Ruta para descargar el archivo de resultados
+app.get("/descargar", (req, res) => {
+    res.download(archivoResultados, "resultado.txt", (err) => {
+        if (err) {
+            return res.status(500).json({ error: "Error al descargar el archivo" });
+        }
+    });
+});
+
 // Iniciar el servidor
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
