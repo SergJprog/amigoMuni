@@ -160,3 +160,80 @@ ul {
 .button-draw:hover {
     background-color: var(--color-button-hover);
 }
+
+/* Media Queries para Responsividad */
+@media screen and (max-width: 768px) {
+    .header-banner {
+        flex: 30%;
+        padding: 20px 0 0;
+    }
+
+    .main-title {
+        font-size: 36px;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .input-wrapper {
+        flex-direction: column;
+        margin-top: 15px;
+    }
+
+    .input-name {
+        margin-bottom: 10px;
+    }
+
+    .button-container {
+        width: 80%;
+    }
+
+    .button-draw {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+
+    .result-list {
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .header-banner {
+        flex: 20%;
+        padding: 15px 0 0;
+    }
+
+    .main-title {
+        font-size: 28px;
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .input-wrapper {
+        flex-direction: column;
+        margin-top: 10px;
+        max-width: 100%;
+    }
+
+    .input-name {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .button-container {
+        width: 90%;
+    }
+
+    .button-draw {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .result-list {
+        font-size: 16px;
+    }
+}
