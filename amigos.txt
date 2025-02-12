@@ -6,7 +6,7 @@ Lili
 Hellen 
 Ingrid 
 Lubia 
-Stefany Días 
+Stefany Díaz 
 Jorge Arrecis 
 Priscilla 
 Dayana 
@@ -22,7 +22,7 @@ Alexander Roman
 Roberto Mazariegos 
 Luz Villalobos 
 Keila Ramos 
-Sergio R.
+Sergio Robles
 Wueslyn Ordoñez
 Dinaida 
 Hugo Monroy
@@ -32,3 +32,4 @@ Astrid Gómez
 Dairy Barillas
 Juan Dubón
 Stephanie Lemus 
+Perla Robles
