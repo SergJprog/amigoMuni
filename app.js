@@ -17,18 +17,6 @@ async function cargarAmigos() {
     });
 }
 
-// Cargar resultados anteriores al iniciar
-async function cargarResultados() {
-    let res = await fetch("https://amigomuni.onrender.com/resultados");
-    let sorteos = await res.json();
-    resultado.innerHTML = "";
-    sorteos.forEach(nombre => {
-        let li = document.createElement("li");
-        li.textContent = `Amigo sorteado: ${nombre}`;
-        resultado.appendChild(li);
-    });
-}
-
 // Agregar un amigo
 btnAgregar.addEventListener("click", async () => {
     let nombre = inputAmigo.value.trim();
@@ -54,13 +42,12 @@ btnSortear.addEventListener("click", async () => {
     let res = await fetch("https://amigomuni.onrender.com/sortear", { method: "POST" });
     let data = await res.json();
 
-    let li = document.createElement("li");
-    if (data.mensaje) {
-        li.textContent = data.mensaje; // Mensaje "Ya no hay amigos para sortear"
-    } else {
-        li.textContent = `Amigo sorteado: ${data.nombre}`;
-    }
-    resultado.appendChild(li);
+    // Limpiar resultado previo y mostrar solo el nuevo
+    resultado.innerHTML = "";
+
+    let p = document.createElement("p");
+    p.textContent = data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`;
+    resultado.appendChild(p);
 
     cargarAmigos(); // Actualiza la lista de amigos
 
@@ -85,4 +72,3 @@ imgDescargar.addEventListener("click", async () => {
 
 // Cargar datos al inicio
 cargarAmigos();
-cargarResultados();
