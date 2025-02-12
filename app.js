@@ -1,7 +1,7 @@
 const btnSortear = document.querySelector("#btnSortear");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
-const imgDescargar = document.querySelector("#btnDescargar"); // Imagen existente
+const imgDescargar = document.querySelector("#btnDescargar");
 
 // Cargar lista de amigos al iniciar
 async function cargarAmigos() {
@@ -19,15 +19,18 @@ async function cargarAmigos() {
     }
 }
 
-// Sortear un amigo
+// Sortear un amigo (una sola vez por sesión)
 btnSortear.addEventListener("click", async () => {
+    if (sessionStorage.getItem("sorteoRealizado")) {
+        alert("Ya realizaste un sorteo en esta sesión.");
+        return;
+    }
+
     try {
         let res = await fetch("https://amigomuni.onrender.com/sortear", { method: "POST" });
         let data = await res.json();
 
-        // Limpiar resultado previo y mostrar solo el nuevo
         resultado.innerHTML = "";
-
         let p = document.createElement("p");
         p.textContent = data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`;
         resultado.appendChild(p);
@@ -35,7 +38,12 @@ btnSortear.addEventListener("click", async () => {
         cargarAmigos(); // Volver a cargar la lista de amigos actualizada
 
         // Mostrar la imagen de descarga después del sorteo
-        imgDescargar.style.display = "inline-block"; // Se muestra la imagen como botón
+        imgDescargar.style.display = "inline-block";
+
+        // Deshabilitar el botón después de un sorteo
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+        sessionStorage.setItem("sorteoRealizado", "true"); // Guardar en sessionStorage
     } catch (error) {
         console.error("Error al sortear:", error);
     }
@@ -60,5 +68,11 @@ imgDescargar.addEventListener("click", async () => {
     }
 });
 
-// Cargar la lista de amigos al inicio
-document.addEventListener("DOMContentLoaded", cargarAmigos);
+// Verificar si el sorteo ya se hizo en la sesión
+document.addEventListener("DOMContentLoaded", () => {
+    cargarAmigos();
+    if (sessionStorage.getItem("sorteoRealizado")) {
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+    }
+});
