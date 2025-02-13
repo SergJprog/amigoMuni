@@ -2,10 +2,14 @@ const btnSortear = document.querySelector("#btnSortear");
 const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
 const imgDescargar = document.querySelector("#btnDescargar");
-const inputNombre = document.querySelector("#nombreParticipante"); // Capturar el input
+const inputNombre = document.querySelector("#nombreParticipante");
+
+document.addEventListener("DOMContentLoaded", async () => {
+    verificarResultados();
+});
 
 btnSortear.addEventListener("click", async () => {
-    const nombreUsuario = inputNombre.value.trim(); // Obtener el nombre del participante
+    const nombreUsuario = inputNombre.value.trim();
 
     if (!nombreUsuario) {
         alert("Por favor, ingresa tu nombre antes de sortear.");
@@ -21,7 +25,7 @@ btnSortear.addEventListener("click", async () => {
         let res = await fetch("https://amigomuni.onrender.com/sortear", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario: nombreUsuario }) // Enviar el nombre al servidor
+            body: JSON.stringify({ usuario: nombreUsuario })
         });
 
         let data = await res.json();
@@ -31,7 +35,7 @@ btnSortear.addEventListener("click", async () => {
         p.textContent = data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`;
         resultado.appendChild(p);
 
-        imgDescargar.style.display = "inline-block";
+        verificarResultados();
         btnSortear.disabled = true;
         btnSortear.style.opacity = "0.5";
         sessionStorage.setItem("sorteoRealizado", "true");
@@ -39,6 +43,19 @@ btnSortear.addEventListener("click", async () => {
         console.error("Error al sortear:", error);
     }
 });
+
+async function verificarResultados() {
+    try {
+        let res = await fetch("https://amigomuni.onrender.com/verificarResultados");
+        let data = await res.json();
+
+        if (data.hayResultados) {
+            imgDescargar.style.display = "inline-block";
+        }
+    } catch (error) {
+        console.error("Error al verificar los resultados:", error);
+    }
+}
 
 imgDescargar.addEventListener("click", async () => {
     try {
