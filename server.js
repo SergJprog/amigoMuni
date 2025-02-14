@@ -11,45 +11,20 @@ const archivoResultados = path.join(__dirname, "resultado.txt");
 app.use(cors());
 app.use(express.json());
 
-// Leer la lista de amigos
-app.get("/amigos", (req, res) => {
-    fs.readFile(archivoAmigos, "utf8", (err, data) => {
-        if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
-        let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-        res.json(amigos);
-    });
-});
-
-// Verificar si ya no hay amigos
+// Verificar si aún quedan amigos
 app.get("/verificarLista", (req, res) => {
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
+        
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-        res.json({ quedanAmigos: amigos.length > 0 });
-    });
-});
-
-// Verificar si un usuario ya sorteó
-app.get("/verificarResultado/:usuario", (req, res) => {
-    const usuario = req.params.usuario.trim();
-
-    fs.readFile(archivoResultados, "utf8", (err, data) => {
-        if (err) return res.status(500).json({ error: "Error leyendo resultado.txt" });
-
-        let lineas = data.split("\n").map(n => n.trim()).filter(n => n);
-        let resultadoUsuario = lineas.find(linea => linea.includes(`- ${usuario}`));
-
-        if (resultadoUsuario) {
-            res.json({ yaSorteo: true, resultado: resultadoUsuario });
-        } else {
-            res.json({ yaSorteo: false });
-        }
+        res.json({ sinAmigos: amigos.length === 0 });
     });
 });
 
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
-    const usuario = req.body.usuario.trim();
+    const { nombreUsuario } = req.body;
+    if (!nombreUsuario) return res.status(400).json({ error: "Nombre de usuario requerido" });
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
@@ -67,7 +42,7 @@ app.post("/sortear", (req, res) => {
             if (err) console.error("Error al actualizar amigos.txt", err);
         });
 
-        fs.appendFile(archivoResultados, `${amigoSorteado} - ${usuario}\n`, (err) => {
+        fs.appendFile(archivoResultados, `${amigoSorteado} - ${nombreUsuario}\n`, (err) => {
             if (err) console.error("Error guardando el resultado", err);
         });
 
@@ -75,12 +50,10 @@ app.post("/sortear", (req, res) => {
     });
 });
 
-// Descargar resultados en todo momento
+// Descargar resultados
 app.get("/descargar", (req, res) => {
     res.download(archivoResultados, "resultado.txt", (err) => {
-        if (err) {
-            return res.status(500).json({ error: "Error al descargar el archivo" });
-        }
+        if (err) res.status(500).json({ error: "Error al descargar el archivo" });
     });
 });
 
