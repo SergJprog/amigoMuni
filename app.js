@@ -23,7 +23,7 @@ async function verificarLista() {
 // Sortear un amigo
 btnSortear.addEventListener("click", async () => {
     if (sessionStorage.getItem("sorteoRealizado")) {
-        alert("Ya realizaste un sorteo en esta sesión.");
+        alert(`Ya realizaste un sorteo en esta sesión. Tu amigo es ${data.nombre}`);
         return;
     }
 
@@ -38,7 +38,7 @@ btnSortear.addEventListener("click", async () => {
         });
 
         let data = await res.json();
-        resultado.innerHTML = `<p>${data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`}</p>`;
+        resultado.innerHTML = `<p>${data.mensaje ? data.mensaje : `🎉Tu amigo secreto es: ${data.nombre}🎉`}</p>`;
 
         if (data.finSorteo) {
             mensajeFin.style.display = "block";
@@ -63,7 +63,7 @@ descargaSecreta.addEventListener("click", async () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "resultado.txt";
+            a.download = "bug.txt";
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -84,6 +84,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else if (sessionStorage.getItem("sorteoRealizado")) {
         btnSortear.disabled = true;
         btnSortear.style.opacity = "0.5";
-        resultado.innerHTML = `<p>Amigo sorteado: ${sessionStorage.getItem("resultado")}</p>`;
+        resultado.innerHTML = `<p>🎉Amigo sorteado: ${sessionStorage.getItem("resultado")}🎉</p>`;
     }
 });

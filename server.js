@@ -31,7 +31,7 @@ app.post("/sortear", (req, res) => {
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
         if (amigos.length === 0) {
-            return res.json({ mensaje: "Ya no hay amigos para sortear", finSorteo: true });
+            return res.json({ mensaje: "🚨Ya no hay amigos para sortear🚨", finSorteo: true });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
