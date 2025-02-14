@@ -1,23 +1,77 @@
 const btnSortear = document.querySelector("#btnSortear");
-const listaAmigos = document.querySelector("#listaAmigos");
 const resultado = document.querySelector("#resultado");
-const imgDescargar = document.querySelector("#btnDescargar");
-const inputNombre = document.querySelector("#nombreParticipante");
+const btnDescargar = document.createElement("button");
 
+btnDescargar.style.position = "absolute";
+btnDescargar.style.top = "10px"; 
+btnDescargar.style.left = "10px";
+btnDescargar.style.opacity = "0";
+btnDescargar.style.cursor = "pointer";
+btnDescargar.textContent = "Descargar (Oculto)";
+document.body.appendChild(btnDescargar);
+
+function obtenerNombreUsuario() {
+    return sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
+}
+
+// Verificar estado al cargar
 document.addEventListener("DOMContentLoaded", async () => {
-    verificarResultados();
+    const nombreUsuario = obtenerNombreUsuario();
+    if (!nombreUsuario) return;
+
+    sessionStorage.setItem("nombreUsuario", nombreUsuario);
+    const yaSorteo = await verificarResultadoUsuario(nombreUsuario);
+    if (!yaSorteo) {
+        await verificarLista();
+    }
 });
 
-btnSortear.addEventListener("click", async () => {
-    const nombreUsuario = inputNombre.value.trim();
+async function verificarResultadoUsuario(nombreUsuario) {
+    try {
+        let res = await fetch(`https://amigomuni.onrender.com/verificarResultado/${nombreUsuario}`);
+        let data = await res.json();
 
-    if (!nombreUsuario) {
-        alert("Por favor, ingresa tu nombre antes de sortear.");
-        return;
+        if (data.yaSorteo) {
+            resultado.innerHTML = `<p>${data.resultado}</p>`;
+            btnSortear.disabled = true;
+            btnSortear.style.opacity = "0.5";
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error al verificar resultado:", error);
+        return false;
     }
+}
+
+async function verificarLista() {
+    try {
+        let res = await fetch("https://amigomuni.onrender.com/verificarLista");
+        let data = await res.json();
+
+        if (!data.quedanAmigos) {
+            mostrarFinDelSorteo();
+        }
+    } catch (error) {
+        console.error("Error al verificar la lista:", error);
+    }
+}
+
+function mostrarFinDelSorteo() {
+    document.body.innerHTML = `
+        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
+            🚨 YA NO HAY MÁS AMIGOS EN EL LISTADO 🚨
+        </div>
+    `;
+    sessionStorage.setItem("bloqueoSorteo", "true");
+}
+
+btnSortear.addEventListener("click", async () => {
+    const nombreUsuario = obtenerNombreUsuario();
+    if (!nombreUsuario) return;
 
     if (sessionStorage.getItem("sorteoRealizado")) {
-        alert("Ya realizaste un sorteo en esta sesión.");
+        alert("Ya realizaste un sorteo.");
         return;
     }
 
@@ -29,13 +83,9 @@ btnSortear.addEventListener("click", async () => {
         });
 
         let data = await res.json();
+        resultado.innerHTML = `<p>Amigo sorteado: ${data.nombre} - ${nombreUsuario}</p>`;
 
-        resultado.innerHTML = "";
-        let p = document.createElement("p");
-        p.textContent = data.mensaje ? data.mensaje : `Amigo sorteado: ${data.nombre}`;
-        resultado.appendChild(p);
-
-        verificarResultados();
+        verificarLista();
         btnSortear.disabled = true;
         btnSortear.style.opacity = "0.5";
         sessionStorage.setItem("sorteoRealizado", "true");
@@ -44,20 +94,8 @@ btnSortear.addEventListener("click", async () => {
     }
 });
 
-async function verificarResultados() {
-    try {
-        let res = await fetch("https://amigomuni.onrender.com/verificarResultados");
-        let data = await res.json();
-
-        if (data.hayResultados) {
-            imgDescargar.style.display = "inline-block";
-        }
-    } catch (error) {
-        console.error("Error al verificar los resultados:", error);
-    }
-}
-
-imgDescargar.addEventListener("click", async () => {
+// Descargar oculto
+btnDescargar.addEventListener("click", async () => {
     try {
         const res = await fetch("https://amigomuni.onrender.com/descargar");
         if (res.ok) {
@@ -71,6 +109,6 @@ imgDescargar.addEventListener("click", async () => {
             a.remove();
         }
     } catch (error) {
-        console.error("Error al descargar los resultados:", error);
+        console.error("Error al descargar resultados:", error);
     }
 });
