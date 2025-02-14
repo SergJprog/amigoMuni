@@ -39,7 +39,7 @@ async function verificarResultadoUsuario(nombreUsuario) {
         let data = await res.json();
 
         if (data.yaSorteo) {
-            resultado.innerHTML = `<p>${data.resultado}</p>`;
+            resultado.innerHTML = `<p> ${data.resultado}</p>`;
             btnSortear.disabled = true;
             btnSortear.style.opacity = "0.5";
             return true;
