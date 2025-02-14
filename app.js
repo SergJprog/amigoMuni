@@ -3,9 +3,8 @@ const resultado = document.querySelector("#resultado");
 const mensajeFin = document.querySelector("#mensajeFin");
 const btnDescargar = document.createElement("button");
 
-// Botón de descarga oculto
 btnDescargar.style.position = "absolute";
-btnDescargar.style.top = "10px";
+btnDescargar.style.top = "10px"; 
 btnDescargar.style.left = "10px";
 btnDescargar.style.opacity = "0";
 btnDescargar.style.cursor = "pointer";
@@ -14,10 +13,9 @@ document.body.appendChild(btnDescargar);
 
 function obtenerNombreUsuario() {
     let nombre = sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
-    if (nombre) {
-        nombre = nombre.trim().toLowerCase(); // Convertir a minúsculas
-        sessionStorage.setItem("nombreUsuario", nombre);
-    }
+    if (!nombre) return null;
+    nombre = nombre.trim().toLowerCase(); // Convertimos a minúsculas
+    sessionStorage.setItem("nombreUsuario", nombre);
     return nombre;
 }
 
@@ -55,7 +53,7 @@ async function verificarLista() {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
         let data = await res.json();
 
-        if (!data.quedanAmigos) {
+        if (data.quedanAmigos === "YA_NO_HAY_AMIGOS") {
             mostrarFinDelSorteo();
         }
     } catch (error) {
@@ -64,7 +62,7 @@ async function verificarLista() {
 }
 
 function mostrarFinDelSorteo() {
-    mensajeFin.style.display = "block"; // Mostrar el mensaje
+    mensajeFin.style.display = "block";
     btnSortear.disabled = true;
     btnSortear.style.opacity = "0.5";
     sessionStorage.setItem("bloqueoSorteo", "true");
@@ -87,7 +85,8 @@ btnSortear.addEventListener("click", async () => {
         });
 
         let data = await res.json();
-        if (data.mensaje === "Ya no hay amigos para sortear") {
+
+        if (data.mensaje === "YA_NO_HAY_AMIGOS") {
             mostrarFinDelSorteo();
             return;
         }

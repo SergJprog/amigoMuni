@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 const PORT = 3000;
-const archivoAmigos = path.join(__dirname, "amigos.txt");
+const archivoAmigos = path.join(__dirname, "amigos.txt"); 
 const archivoResultados = path.join(__dirname, "resultado.txt");
 
 app.use(cors());
@@ -20,18 +20,18 @@ app.get("/amigos", (req, res) => {
     });
 });
 
-// Verificar si ya no hay amigos
+// Verificar si ya no hay amigos (se mostrará el mensaje solo tras el último sorteo)
 app.get("/verificarLista", (req, res) => {
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-        res.json({ quedanAmigos: amigos.length > 0 });
+        res.json({ quedanAmigos: amigos.length > 0 ? true : "YA_NO_HAY_AMIGOS" });
     });
 });
 
 // Verificar si un usuario ya sorteó (ignorando mayúsculas y minúsculas)
 app.get("/verificarResultado/:usuario", (req, res) => {
-    const usuario = req.params.usuario.trim().toLowerCase();
+    const usuario = req.params.usuario.trim().toLowerCase(); // Convertimos a minúsculas
 
     fs.readFile(archivoResultados, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo resultado.txt" });
@@ -49,14 +49,14 @@ app.get("/verificarResultado/:usuario", (req, res) => {
 
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
-    const usuario = req.body.usuario.trim().toLowerCase();
+    const usuario = req.body.usuario.trim().toLowerCase(); // Convertimos a minúsculas
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
         if (amigos.length === 0) {
-            return res.json({ mensaje: "Ya no hay amigos para sortear" });
+            return res.json({ mensaje: "YA_NO_HAY_AMIGOS" });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
