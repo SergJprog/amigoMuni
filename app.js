@@ -3,6 +3,7 @@ const resultado = document.querySelector("#resultado");
 const mensajeFin = document.querySelector("#mensajeFin");
 const descargaSecreta = document.querySelector("#descargaSecreta");
 
+// Verificar si ya no hay amigos
 async function verificarLista() {
     try {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
@@ -11,7 +12,8 @@ async function verificarLista() {
         if (data.sinAmigos) {
             mensajeFin.style.display = "block";
             btnSortear.disabled = true;
-            sessionStorage.setItem("sorteoFinalizado", "true");
+            btnSortear.style.opacity = "0.5";
+            sessionStorage.setItem("bloqueoTotal", "true");
         }
     } catch (error) {
         console.error("Error al verificar la lista de amigos:", error);
@@ -25,10 +27,8 @@ btnSortear.addEventListener("click", async () => {
         return;
     }
 
-    let nombreUsuario = prompt("Ingresa tu nombre:");
+    let nombreUsuario = prompt("Ingresa tu nombre:").trim().toLowerCase();
     if (!nombreUsuario) return;
-
-    nombreUsuario = nombreUsuario.trim().toLowerCase(); // Ignorar mayúsculas/minúsculas
 
     try {
         let res = await fetch("https://amigomuni.onrender.com/sortear", {
@@ -43,7 +43,8 @@ btnSortear.addEventListener("click", async () => {
         if (data.finSorteo) {
             mensajeFin.style.display = "block";
             btnSortear.disabled = true;
-            sessionStorage.setItem("sorteoFinalizado", "true");
+            btnSortear.style.opacity = "0.5";
+            sessionStorage.setItem("bloqueoTotal", "true");
         }
 
         sessionStorage.setItem("sorteoRealizado", "true");
@@ -76,13 +77,13 @@ descargaSecreta.addEventListener("click", async () => {
 document.addEventListener("DOMContentLoaded", async () => {
     verificarLista();
 
-    if (sessionStorage.getItem("sorteoRealizado")) {
-        btnSortear.disabled = true;
-        resultado.innerHTML = `<p>Amigo sorteado: ${sessionStorage.getItem("resultado")}</p>`;
-    }
-
-    if (sessionStorage.getItem("sorteoFinalizado")) {
+    if (sessionStorage.getItem("bloqueoTotal")) {
         mensajeFin.style.display = "block";
         btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+    } else if (sessionStorage.getItem("sorteoRealizado")) {
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
+        resultado.innerHTML = `<p>Amigo sorteado: ${sessionStorage.getItem("resultado")}</p>`;
     }
 });
