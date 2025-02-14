@@ -24,14 +24,16 @@ app.get("/verificarLista", (req, res) => {
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
     const { nombreUsuario } = req.body;
+
     if (!nombreUsuario) return res.status(400).json({ error: "Nombre requerido" });
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
+
         if (amigos.length === 0) {
-            return res.json({ mensaje: "🚨Ya no hay amigos para sortear🚨", finSorteo: true });
+            return res.json({ mensaje: "YA NO HAY MÁS AMIGOS EN EL LISTADO", finSorteo: true });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
