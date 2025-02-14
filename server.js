@@ -11,11 +11,11 @@ const archivoResultados = path.join(__dirname, "resultado.txt");
 app.use(cors());
 app.use(express.json());
 
-// Verificar si aún quedan amigos
+// Verificar si hay amigos en la lista
 app.get("/verificarLista", (req, res) => {
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
-        
+
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
         res.json({ sinAmigos: amigos.length === 0 });
     });
@@ -24,14 +24,16 @@ app.get("/verificarLista", (req, res) => {
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
     const { nombreUsuario } = req.body;
-    if (!nombreUsuario) return res.status(400).json({ error: "Nombre de usuario requerido" });
+
+    if (!nombreUsuario) return res.status(400).json({ error: "Nombre requerido" });
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
+
         if (amigos.length === 0) {
-            return res.json({ mensaje: "Ya no hay amigos para sortear" });
+            return res.json({ mensaje: "Ya no hay amigos para sortear", finSorteo: true });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
@@ -42,18 +44,18 @@ app.post("/sortear", (req, res) => {
             if (err) console.error("Error al actualizar amigos.txt", err);
         });
 
-        fs.appendFile(archivoResultados, `${amigoSorteado} - ${nombreUsuario}\n`, (err) => {
+        fs.appendFile(archivoResultados, `${amigoSorteado} - ${nombreUsuario.toLowerCase()}\n`, (err) => {
             if (err) console.error("Error guardando el resultado", err);
         });
 
-        res.json({ nombre: amigoSorteado });
+        res.json({ nombre: amigoSorteado, finSorteo: amigos.length === 0 });
     });
 });
 
 // Descargar resultados
 app.get("/descargar", (req, res) => {
     res.download(archivoResultados, "resultado.txt", (err) => {
-        if (err) res.status(500).json({ error: "Error al descargar el archivo" });
+        if (err) return res.status(500).json({ error: "Error al descargar el archivo" });
     });
 });
 
