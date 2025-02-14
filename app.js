@@ -1,61 +1,101 @@
 const btnSortear = document.querySelector("#btnSortear");
 const resultado = document.querySelector("#resultado");
-const mensajeFin = document.querySelector("#mensajeFin");
-const descargaSecreta = document.querySelector("#descargaSecreta");
+const btnDescargar = document.createElement("button");
 
-// Verificar si ya no hay amigos
+btnDescargar.style.position = "absolute";
+btnDescargar.style.top = "10px"; 
+btnDescargar.style.left = "10px";
+btnDescargar.style.opacity = "0";
+btnDescargar.style.cursor = "pointer";
+btnDescargar.textContent = "Descargar (Oculto)";
+document.body.appendChild(btnDescargar);
+
+function obtenerNombreUsuario() {
+    return sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
+}
+
+// Verificar estado al cargar
+document.addEventListener("DOMContentLoaded", async () => {
+    const nombreUsuario = obtenerNombreUsuario();
+    if (!nombreUsuario) return;
+
+    sessionStorage.setItem("nombreUsuario", nombreUsuario);
+    const yaSorteo = await verificarResultadoUsuario(nombreUsuario);
+    if (!yaSorteo) {
+        await verificarLista();
+    }
+});
+
+async function verificarResultadoUsuario(nombreUsuario) {
+    try {
+        let res = await fetch(`https://amigomuni.onrender.com/verificarResultado/${nombreUsuario}`);
+        let data = await res.json();
+
+        if (data.yaSorteo) {
+            resultado.innerHTML = `<p>${data.resultado}</p>`;
+            btnSortear.disabled = true;
+            btnSortear.style.opacity = "0.5";
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error al verificar resultado:", error);
+        return false;
+    }
+}
+
 async function verificarLista() {
     try {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
         let data = await res.json();
 
-        if (data.sinAmigos) {
-            mensajeFin.style.display = "block";
-            btnSortear.disabled = true;
-            btnSortear.style.opacity = "0.5";
-            sessionStorage.setItem("bloqueoTotal", "true");
+        if (!data.quedanAmigos) {
+            mostrarFinDelSorteo();
         }
     } catch (error) {
-        console.error("Error al verificar la lista de amigos:", error);
+        console.error("Error al verificar la lista:", error);
     }
 }
 
-// Sortear un amigo
+function mostrarFinDelSorteo() {
+    document.body.innerHTML = `
+        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
+            🚨 YA NO HAY MÁS AMIGOS EN EL LISTADO 🚨
+        </div>
+    `;
+    sessionStorage.setItem("bloqueoSorteo", "true");
+}
+
 btnSortear.addEventListener("click", async () => {
+    const nombreUsuario = obtenerNombreUsuario();
+    if (!nombreUsuario) return;
+
     if (sessionStorage.getItem("sorteoRealizado")) {
-        alert("Ya realizaste un sorteo en esta sesión.");
+        alert("Ya realizaste un sorteo.");
         return;
     }
-
-    let nombreUsuario = prompt("Ingresa tu nombre:").trim().toLowerCase();
-    if (!nombreUsuario) return;
 
     try {
         let res = await fetch("https://amigomuni.onrender.com/sortear", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombreUsuario })
+            body: JSON.stringify({ usuario: nombreUsuario })
         });
 
         let data = await res.json();
-        resultado.innerHTML = `<p>${data.mensaje ? data.mensaje : `🥳Tu amigo secreto: ${data.nombre}`}🥳</p>`;
+        resultado.innerHTML = `<p>Amigo sorteado: ${data.nombre} - ${nombreUsuario}</p>`;
 
-        if (data.finSorteo) {
-            mensajeFin.style.display = "block";
-            btnSortear.disabled = true;
-            btnSortear.style.opacity = "0.5";
-            sessionStorage.setItem("bloqueoTotal", "true");
-        }
-
+        verificarLista();
+        btnSortear.disabled = true;
+        btnSortear.style.opacity = "0.5";
         sessionStorage.setItem("sorteoRealizado", "true");
-        sessionStorage.setItem("resultado", data.nombre);
     } catch (error) {
         console.error("Error al sortear:", error);
     }
 });
 
-// Descarga secreta del archivo de resultados
-descargaSecreta.addEventListener("click", async () => {
+// Descargar oculto
+btnDescargar.addEventListener("click", async () => {
     try {
         const res = await fetch("https://amigomuni.onrender.com/descargar");
         if (res.ok) {
@@ -69,21 +109,6 @@ descargaSecreta.addEventListener("click", async () => {
             a.remove();
         }
     } catch (error) {
-        console.error("Error al descargar los resultados:", error);
-    }
-});
-
-// Verificar estado al cargar la página
-document.addEventListener("DOMContentLoaded", async () => {
-    verificarLista();
-
-    if (sessionStorage.getItem("bloqueoTotal")) {
-        mensajeFin.style.display = "block";
-        btnSortear.disabled = true;
-        btnSortear.style.opacity = "0.5";
-    } else if (sessionStorage.getItem("sorteoRealizado")) {
-        btnSortear.disabled = true;
-        btnSortear.style.opacity = "0.5";
-        resultado.innerHTML = `<p>Amigo sorteado: ${sessionStorage.getItem("resultado")}</p>`;
+        console.error("Error al descargar resultados:", error);
     }
 });

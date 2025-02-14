@@ -11,29 +11,52 @@ const archivoResultados = path.join(__dirname, "resultado.txt");
 app.use(cors());
 app.use(express.json());
 
-// Verificar si hay amigos en la lista
+// Leer la lista de amigos
+app.get("/amigos", (req, res) => {
+    fs.readFile(archivoAmigos, "utf8", (err, data) => {
+        if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
+        let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
+        res.json(amigos);
+    });
+});
+
+// Verificar si ya no hay amigos
 app.get("/verificarLista", (req, res) => {
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
-
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-        res.json({ sinAmigos: amigos.length === 0 });
+        res.json({ quedanAmigos: amigos.length > 0 });
+    });
+});
+
+// Verificar si un usuario ya sorteó
+app.get("/verificarResultado/:usuario", (req, res) => {
+    const usuario = req.params.usuario.trim();
+
+    fs.readFile(archivoResultados, "utf8", (err, data) => {
+        if (err) return res.status(500).json({ error: "Error leyendo resultado.txt" });
+
+        let lineas = data.split("\n").map(n => n.trim()).filter(n => n);
+        let resultadoUsuario = lineas.find(linea => linea.includes(`- ${usuario}`));
+
+        if (resultadoUsuario) {
+            res.json({ yaSorteo: true, resultado: resultadoUsuario });
+        } else {
+            res.json({ yaSorteo: false });
+        }
     });
 });
 
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
-    const { nombreUsuario } = req.body;
-
-    if (!nombreUsuario) return res.status(400).json({ error: "Nombre requerido" });
+    const usuario = req.body.usuario.trim();
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-
         if (amigos.length === 0) {
-            return res.json({ mensaje: "YA NO HAY MÁS AMIGOS EN EL LISTADO", finSorteo: true });
+            return res.json({ mensaje: "Ya no hay amigos para sortear" });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
@@ -44,18 +67,20 @@ app.post("/sortear", (req, res) => {
             if (err) console.error("Error al actualizar amigos.txt", err);
         });
 
-        fs.appendFile(archivoResultados, `${amigoSorteado} - ${nombreUsuario.toLowerCase()}\n`, (err) => {
+        fs.appendFile(archivoResultados, `${amigoSorteado} - ${usuario}\n`, (err) => {
             if (err) console.error("Error guardando el resultado", err);
         });
 
-        res.json({ nombre: amigoSorteado, finSorteo: amigos.length === 0 });
+        res.json({ nombre: amigoSorteado });
     });
 });
 
-// Descargar resultados
+// Descargar resultados en todo momento
 app.get("/descargar", (req, res) => {
     res.download(archivoResultados, "resultado.txt", (err) => {
-        if (err) return res.status(500).json({ error: "Error al descargar el archivo" });
+        if (err) {
+            return res.status(500).json({ error: "Error al descargar el archivo" });
+        }
     });
 });
 
