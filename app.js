@@ -1,6 +1,5 @@
 const btnSortear = document.querySelector("#btnSortear");
 const resultado = document.querySelector("#resultado");
-const mensajeFin = document.querySelector("#mensajeFin");
 const btnDescargar = document.createElement("button");
 
 btnDescargar.style.position = "absolute";
@@ -11,11 +10,15 @@ btnDescargar.style.cursor = "pointer";
 btnDescargar.textContent = "Descargar (Oculto)";
 document.body.appendChild(btnDescargar);
 
+const mensajeFin = document.querySelector("#mensajeFin");
+
+// Obtener nombre del usuario sin importar mayúsculas/minúsculas
 function obtenerNombreUsuario() {
     let nombre = sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
-    if (!nombre) return null;
-    nombre = nombre.trim().toLowerCase(); // Convertimos a minúsculas
-    sessionStorage.setItem("nombreUsuario", nombre);
+    if (nombre) {
+        nombre = nombre.trim().toLowerCase(); // Convertir a minúsculas
+        sessionStorage.setItem("nombreUsuario", nombre);
+    }
     return nombre;
 }
 
@@ -53,7 +56,7 @@ async function verificarLista() {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
         let data = await res.json();
 
-        if (data.quedanAmigos === "YA_NO_HAY_AMIGOS") {
+        if (!data.quedanAmigos) {
             mostrarFinDelSorteo();
         }
     } catch (error) {
@@ -61,10 +64,14 @@ async function verificarLista() {
     }
 }
 
+// Mostrar mensaje cuando ya no hay amigos en el listado
 function mostrarFinDelSorteo() {
     mensajeFin.style.display = "block";
-    btnSortear.disabled = true;
-    btnSortear.style.opacity = "0.5";
+    document.body.innerHTML = `
+        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
+            🥺 YA NO HAY MÁS AMIGOS EN EL LISTADO 🥺
+        </div>
+    `;
     sessionStorage.setItem("bloqueoSorteo", "true");
 }
 
@@ -73,7 +80,7 @@ btnSortear.addEventListener("click", async () => {
     if (!nombreUsuario) return;
 
     if (sessionStorage.getItem("sorteoRealizado")) {
-        alert("Ya realizaste un sorteo.");
+        alert(`Ya realizaste un sorteo. Tu amigo secreto es: ${data.nombre}`);
         return;
     }
 
@@ -85,15 +92,12 @@ btnSortear.addEventListener("click", async () => {
         });
 
         let data = await res.json();
+        resultado.innerHTML = `<p>🥳 Tu amigo secreto es: ${data.nombre} - ${nombreUsuario} 🥳</p>`;
 
-        if (data.mensaje === "YA_NO_HAY_AMIGOS") {
+        if (data.quedanAmigos === 0) {
             mostrarFinDelSorteo();
-            return;
         }
 
-        resultado.innerHTML = `<p>Amigo sorteado: ${data.nombre} - ${nombreUsuario}</p>`;
-
-        verificarLista();
         btnSortear.disabled = true;
         btnSortear.style.opacity = "0.5";
         sessionStorage.setItem("sorteoRealizado", "true");

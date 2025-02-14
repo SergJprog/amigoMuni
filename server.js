@@ -20,18 +20,18 @@ app.get("/amigos", (req, res) => {
     });
 });
 
-// Verificar si ya no hay amigos (se mostrará el mensaje solo tras el último sorteo)
+// Verificar si ya no hay amigos
 app.get("/verificarLista", (req, res) => {
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
-        res.json({ quedanAmigos: amigos.length > 0 ? true : "YA_NO_HAY_AMIGOS" });
+        res.json({ quedanAmigos: amigos.length > 0 });
     });
 });
 
-// Verificar si un usuario ya sorteó (ignorando mayúsculas y minúsculas)
+// Verificar si un usuario ya sorteó (ignorar mayúsculas y minúsculas)
 app.get("/verificarResultado/:usuario", (req, res) => {
-    const usuario = req.params.usuario.trim().toLowerCase(); // Convertimos a minúsculas
+    const usuario = req.params.usuario.trim().toLowerCase(); // Convertir a minúsculas
 
     fs.readFile(archivoResultados, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo resultado.txt" });
@@ -49,14 +49,14 @@ app.get("/verificarResultado/:usuario", (req, res) => {
 
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
-    const usuario = req.body.usuario.trim().toLowerCase(); // Convertimos a minúsculas
+    const usuario = req.body.usuario.trim().toLowerCase(); // Ignorar mayúsculas/minúsculas
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });
 
         let amigos = data.split("\n").map(n => n.trim()).filter(n => n);
         if (amigos.length === 0) {
-            return res.json({ mensaje: "YA_NO_HAY_AMIGOS" });
+            return res.json({ mensaje: "Ya no hay amigos para sortear" });
         }
 
         let indiceAleatorio = Math.floor(Math.random() * amigos.length);
@@ -71,7 +71,7 @@ app.post("/sortear", (req, res) => {
             if (err) console.error("Error guardando el resultado", err);
         });
 
-        res.json({ nombre: amigoSorteado });
+        res.json({ nombre: amigoSorteado, quedanAmigos: amigos.length });
     });
 });
 
