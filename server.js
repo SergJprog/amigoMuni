@@ -29,15 +29,15 @@ app.get("/verificarLista", (req, res) => {
     });
 });
 
-// Verificar si un usuario ya sorteó
+// Verificar si un usuario ya sorteó (ignorando mayúsculas y minúsculas)
 app.get("/verificarResultado/:usuario", (req, res) => {
-    const usuario = req.params.usuario.trim();
+    const usuario = req.params.usuario.trim().toLowerCase();
 
     fs.readFile(archivoResultados, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo resultado.txt" });
 
         let lineas = data.split("\n").map(n => n.trim()).filter(n => n);
-        let resultadoUsuario = lineas.find(linea => linea.includes(`- ${usuario}`));
+        let resultadoUsuario = lineas.find(linea => linea.toLowerCase().includes(`- ${usuario}`));
 
         if (resultadoUsuario) {
             res.json({ yaSorteo: true, resultado: resultadoUsuario });
@@ -49,7 +49,7 @@ app.get("/verificarResultado/:usuario", (req, res) => {
 
 // Sortear un amigo
 app.post("/sortear", (req, res) => {
-    const usuario = req.body.usuario.trim();
+    const usuario = req.body.usuario.trim().toLowerCase();
 
     fs.readFile(archivoAmigos, "utf8", (err, data) => {
         if (err) return res.status(500).json({ error: "Error leyendo amigos.txt" });

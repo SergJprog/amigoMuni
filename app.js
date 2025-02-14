@@ -1,9 +1,11 @@
 const btnSortear = document.querySelector("#btnSortear");
 const resultado = document.querySelector("#resultado");
+const mensajeFin = document.querySelector("#mensajeFin");
 const btnDescargar = document.createElement("button");
 
+// Botón de descarga oculto
 btnDescargar.style.position = "absolute";
-btnDescargar.style.top = "10px"; 
+btnDescargar.style.top = "10px";
 btnDescargar.style.left = "10px";
 btnDescargar.style.opacity = "0";
 btnDescargar.style.cursor = "pointer";
@@ -11,7 +13,12 @@ btnDescargar.textContent = "Descargar (Oculto)";
 document.body.appendChild(btnDescargar);
 
 function obtenerNombreUsuario() {
-    return sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
+    let nombre = sessionStorage.getItem("nombreUsuario") || prompt("Ingresa tu nombre:");
+    if (nombre) {
+        nombre = nombre.trim().toLowerCase(); // Convertir a minúsculas
+        sessionStorage.setItem("nombreUsuario", nombre);
+    }
+    return nombre;
 }
 
 // Verificar estado al cargar
@@ -19,7 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nombreUsuario = obtenerNombreUsuario();
     if (!nombreUsuario) return;
 
-    sessionStorage.setItem("nombreUsuario", nombreUsuario);
     const yaSorteo = await verificarResultadoUsuario(nombreUsuario);
     if (!yaSorteo) {
         await verificarLista();
@@ -58,11 +64,9 @@ async function verificarLista() {
 }
 
 function mostrarFinDelSorteo() {
-    document.body.innerHTML = `
-        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
-            🚨 YA NO HAY MÁS AMIGOS EN EL LISTADO 🚨
-        </div>
-    `;
+    mensajeFin.style.display = "block"; // Mostrar el mensaje
+    btnSortear.disabled = true;
+    btnSortear.style.opacity = "0.5";
     sessionStorage.setItem("bloqueoSorteo", "true");
 }
 
@@ -83,6 +87,11 @@ btnSortear.addEventListener("click", async () => {
         });
 
         let data = await res.json();
+        if (data.mensaje === "Ya no hay amigos para sortear") {
+            mostrarFinDelSorteo();
+            return;
+        }
+
         resultado.innerHTML = `<p>Amigo sorteado: ${data.nombre} - ${nombreUsuario}</p>`;
 
         verificarLista();
