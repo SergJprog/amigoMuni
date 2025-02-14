@@ -7,10 +7,11 @@ async function verificarLista() {
     try {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
         let data = await res.json();
-        
+
         if (data.sinAmigos) {
             mensajeFin.style.display = "block";
             btnSortear.disabled = true;
+            sessionStorage.setItem("sorteoFinalizado", "true");
         }
     } catch (error) {
         console.error("Error al verificar la lista de amigos:", error);
@@ -42,6 +43,7 @@ btnSortear.addEventListener("click", async () => {
         if (data.finSorteo) {
             mensajeFin.style.display = "block";
             btnSortear.disabled = true;
+            sessionStorage.setItem("sorteoFinalizado", "true");
         }
 
         sessionStorage.setItem("sorteoRealizado", "true");
@@ -77,5 +79,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (sessionStorage.getItem("sorteoRealizado")) {
         btnSortear.disabled = true;
         resultado.innerHTML = `<p>Amigo sorteado: ${sessionStorage.getItem("resultado")}</p>`;
+    }
+
+    if (sessionStorage.getItem("sorteoFinalizado")) {
+        mensajeFin.style.display = "block";
+        btnSortear.disabled = true;
     }
 });
