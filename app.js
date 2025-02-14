@@ -51,12 +51,31 @@ async function verificarResultadoUsuario(nombreUsuario) {
     }
 }
 
+function mostrarFinDelSorteo() {
+    // Almacenar en sessionStorage que el sorteo ha finalizado
+    sessionStorage.setItem("bloqueoSorteo", "true");
+
+    // Mostrar el mensaje grande de fin del sorteo
+    document.body.innerHTML = `
+        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
+            🥺 YA NO HAY MÁS AMIGOS EN EL LISTADO 🥺
+        </div>
+    `;
+}
+
+// Modificar la función verificarLista para que solo el siguiente usuario vea el mensaje
 async function verificarLista() {
     try {
         let res = await fetch("https://amigomuni.onrender.com/verificarLista");
         let data = await res.json();
 
         if (!data.quedanAmigos) {
+            // Guardar en sessionStorage que ya no hay amigos, pero no mostrar el mensaje aún
+            sessionStorage.setItem("listaVacia", "true");
+        }
+
+        // Si ya se había registrado que la lista está vacía, mostrar el mensaje
+        if (sessionStorage.getItem("listaVacia") === "true") {
             mostrarFinDelSorteo();
         }
     } catch (error) {
@@ -64,16 +83,6 @@ async function verificarLista() {
     }
 }
 
-// Mostrar mensaje cuando ya no hay amigos en el listado
-function mostrarFinDelSorteo() {
-    mensajeFin.style.display = "block";
-    document.body.innerHTML = `
-        <div style="text-align: center; font-size: 32px; font-weight: bold; color: red; margin-top: 20vh;">
-            🥺 YA NO HAY MÁS AMIGOS EN EL LISTADO 🥺
-        </div>
-    `;
-    sessionStorage.setItem("bloqueoSorteo", "true");
-}
 
 btnSortear.addEventListener("click", async () => {
     const nombreUsuario = obtenerNombreUsuario();
